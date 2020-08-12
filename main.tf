@@ -20,13 +20,10 @@ resource "shell_script" "subscription" {
     tenant = var.tenant_id
     type   = local.type_codes[var.type]
   }
-}
+  interpreter = ["pwsh", "-command"]
 
-data "azurerm_client_config" "current" {}
-
-resource "azurerm_role_assignment" "owners" {
-  for_each             = toset(var.principal_ids)
-  scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
-  role_definition_name = "Owner"
-  principal_id         = each.key
+  sensitive_environment = {
+    azsub_client_id     = var.client_id
+    azsub_client_secret = var.client_secret
+  }
 }
